@@ -1,10 +1,7 @@
 
-import java.util.TreeMap;
 import  java.sql.*;
 
 public class Main {
-
-    TreeMap<String, Integer> vacancies = new TreeMap<>();
 
     public static void main(String[] args) throws SQLException{
 
