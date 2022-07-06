@@ -1,4 +1,4 @@
-package StraightUseDriverTest;
+package kalchenko.straightUseDriverTest;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.suite.api.Suite;
 
