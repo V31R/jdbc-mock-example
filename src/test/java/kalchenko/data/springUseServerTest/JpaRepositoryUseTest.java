@@ -1,4 +1,4 @@
-package kalchenko.springUseDriverTest;
+package kalchenko.data.springUseServerTest;
 
 import kalchenko.data.DataRepository;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = DataRepository.class)
+@SpringBootTest
 public class JpaRepositoryUseTest {
 
     @Autowired
