@@ -3,6 +3,7 @@ package kalchenko.data.springUseServerTest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import kalchenko.data.Data;
 import kalchenko.data.DataRepository;
 import org.example.HttpPreparedStatement;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,14 +51,31 @@ public class JpaRepositoryUseTest {
     public void findAll(WireMockRuntimeInfo wmRuntimeInfo){
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain","\"Timestamp\",\"Age\",\"Gender\" " +
-                        "\n 2014-08-27 11:29:31,37,\"Female\"")));
-
-        HttpPreparedStatement httpPreparedStatement;
+                .willReturn(okForContentType("text/plain",getCsvData())));
 
         var result = dataRepository.findAll();
 
-        assertNotNull(result);
+        assertEquals(getData(), result.get(0));
+
+    }
+
+    static Data getData(){
+
+        Data data = new Data();
+        data.setId(0L);
+        data.setDescription("description");
+        data.setName("name");
+
+        return data;
+
+    }
+
+    static  String getCsvData(){
+        Data data = getData();
+        return "\"id1_0_\", \"descript2_0_\", \"name3_0_\"" +
+                "\n " + data.getId() + ", \""
+                + data.getDescription() + "\", \""
+                + data.getName() + "\"";
 
     }
 

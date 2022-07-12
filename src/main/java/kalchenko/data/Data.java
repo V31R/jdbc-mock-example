@@ -39,4 +39,12 @@ public class Data {
         this.description = description;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        Data secondData = (Data)obj;
+
+        return id.equals(secondData.id) &&
+                description.equals(secondData.description) &&
+                name.equals(secondData.name);
+    }
 }
