@@ -53,12 +53,11 @@ public class JpaRepositoryUseTest {
     @Test
     public void findAll(WireMockRuntimeInfo wmRuntimeInfo){
 
-        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain",getCsvData())));
+        stubForOneData(wmRuntimeInfo);
 
         var result = dataRepository.findAll();
 
-        assertEquals(getData(), result.get(0));
+        assertEquals(getData(0), result.get(0));
 
     }
 
@@ -66,20 +65,33 @@ public class JpaRepositoryUseTest {
     @Test
     public void findAllById(WireMockRuntimeInfo wmRuntimeInfo){
 
-        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain",getCsvData())));
+        stubForOneData(wmRuntimeInfo);
+
         var ids =new ArrayList<Long>();
         ids.add(0L);
+
         var result = dataRepository.findAllById(ids);
 
-        assertEquals(getData(), result.get(0));
+        assertEquals(getData(0), result.get(0));
 
     }
 
-    static Data getData(){
+    @Test
+    public void findById(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+
+        var result = dataRepository.findById(1L);
+
+        assertEquals(getData(1), result.get());
+
+    }
+
+    static Data getData(long id){
 
         Data data = new Data();
-        data.setId(0L);
+        data.setId(id);
         data.setDescription("description");
         data.setName("name");
 
@@ -88,11 +100,27 @@ public class JpaRepositoryUseTest {
     }
 
     static  String getCsvData(){
-        Data data = getData();
+        Data data = getData(0);
         return "\"id1_0_\", \"descript2_0_\", \"name3_0_\"" +
                 "\n " + data.getId() + ", \""
                 + data.getDescription() + "\", \""
                 + data.getName() + "\"";
+
+    }
+
+    static  String getCsvDataWithZero(){
+        Data data = getData(1);
+        return "\"id1_0_\", \"descript2_0_0_\", \"name3_0_0_\"" +
+                "\n " + data.getId() + ", \""
+                + data.getDescription() + "\", \""
+                + data.getName() + "\"";
+
+    }
+
+    static void stubForOneData(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .willReturn(okForContentType("text/plain",getCsvData())));
 
     }
 
