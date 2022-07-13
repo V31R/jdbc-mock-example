@@ -1,5 +1,6 @@
 package kalchenko.data.springUseServerTest;
 
+import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -54,6 +57,20 @@ public class JpaRepositoryUseTest {
                 .willReturn(okForContentType("text/plain",getCsvData())));
 
         var result = dataRepository.findAll();
+
+        assertEquals(getData(), result.get(0));
+
+    }
+
+
+    @Test
+    public void findAllById(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .willReturn(okForContentType("text/plain",getCsvData())));
+        var ids =new ArrayList<Long>();
+        ids.add(0L);
+        var result = dataRepository.findAllById(ids);
 
         assertEquals(getData(), result.get(0));
 
