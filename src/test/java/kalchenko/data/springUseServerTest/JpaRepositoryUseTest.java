@@ -88,6 +88,32 @@ public class JpaRepositoryUseTest {
 
     }
 
+    @Test
+    public void save_IfSameObjectAlreadyExist(WireMockRuntimeInfo wmRuntimeInfo){
+
+         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+
+        var result = dataRepository.save(getData(1));
+
+        assertEquals(getData(1), result);
+
+    }
+
+    @Test
+    public void save_IfSameObjectDoNotExist(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+
+        Data changed = getData(1);
+        changed.setDescription("changed");
+        var result = dataRepository.save(changed);
+
+        assertEquals(changed, result);
+
+    }
+
     static Data getData(long id){
 
         Data data = new Data();
@@ -109,6 +135,7 @@ public class JpaRepositoryUseTest {
     }
 
     static  String getCsvDataWithZero(){
+        //for method getById spring generated names with adding '0_' in query
         Data data = getData(1);
         return "\"id1_0_\", \"descript2_0_0_\", \"name3_0_0_\"" +
                 "\n " + data.getId() + ", \""
