@@ -143,6 +143,80 @@ public class CrudRepositoryTest {
 
     }
 
+    @Test
+    public void deleteAll(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?delete.+"))
+                .willReturn(okForContentType("text/plain", "rows\n1")));
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?select.+"))
+                .willReturn(okForContentType("text/plain",getCsvData())));
+
+        dataCrud.deleteAll();
+        assertTrue(true);
+
+    }
+
+    @Test
+    public void deleteAll_DataList(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?delete.+"))
+                .willReturn(okForContentType("text/plain", "rows\n1")));
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?select.+"))
+                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+
+        var entities = new ArrayList<Data>();
+        entities.add(getData(0));
+
+        dataCrud.deleteAll(entities);
+
+        assertTrue(true);
+
+    }
+
+    @Test
+    public void deleteAllById(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?delete.+"))
+                .willReturn(okForContentType("text/plain", "rows\n1")));
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?select.+"))
+                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+
+        var ids =new ArrayList<Long>();
+        ids.add(0L);
+
+        dataCrud.deleteAllById(ids);
+
+        assertTrue(true);
+
+    }
+
+
+    @Test
+    public void deleteById(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?delete.+"))
+                .willReturn(okForContentType("text/plain", "rows\n1")));
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?select.+"))
+                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+
+
+        dataCrud.deleteById(0L);
+
+        assertTrue(true);
+
+    }
 
 
 

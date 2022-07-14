@@ -32,7 +32,6 @@ public class JpaRepositoryUseTest {
     private static String url="/sql-mock";
     private static String uri;
 
-
     @BeforeAll
     static void startWireMock(WireMockRuntimeInfo wmRuntimeInfo){
 
