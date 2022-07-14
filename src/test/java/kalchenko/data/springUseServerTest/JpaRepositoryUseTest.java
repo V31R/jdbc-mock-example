@@ -112,8 +112,7 @@ public class JpaRepositoryUseTest {
     @Test
     public void findById(WireMockRuntimeInfo wmRuntimeInfo){
 
-        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+        stubForOneDataWithZero(wmRuntimeInfo);
 
         var result = dataRepository.findById(1L);
 
@@ -124,8 +123,7 @@ public class JpaRepositoryUseTest {
     @Test
     public void save_IfSameObjectAlreadyExist(WireMockRuntimeInfo wmRuntimeInfo){
 
-         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+        stubForOneDataWithZero(wmRuntimeInfo);;
 
         var result = dataRepository.save(getData(1));
 
@@ -136,8 +134,7 @@ public class JpaRepositoryUseTest {
     @Test
     public void save_IfSameObjectDoNotExist(WireMockRuntimeInfo wmRuntimeInfo){
 
-        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+        stubForOneDataWithZero(wmRuntimeInfo);
 
         Data changed = getData(1);
         changed.setDescription("changed");
@@ -181,6 +178,13 @@ public class JpaRepositoryUseTest {
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .willReturn(okForContentType("text/plain",getCsvData())));
+
+    }
+
+    static void stubForOneDataWithZero(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
 
     }
 
