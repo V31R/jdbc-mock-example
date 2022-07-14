@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.util.ArrayIterator;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.matching.ContentPattern;
 import kalchenko.data.Data;
 import kalchenko.data.DataRepository;
 import org.example.HttpPreparedStatement;
@@ -11,8 +12,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -58,6 +62,35 @@ public class JpaRepositoryUseTest {
         var result = dataRepository.findAll();
 
         assertEquals(getData(0), result.get(0));
+
+    }
+
+    @Test
+    public void findAll_Sort(WireMockRuntimeInfo wmRuntimeInfo){
+
+        stubForOneData(wmRuntimeInfo);
+
+        var result = dataRepository.findAll(Sort.by("name"));
+
+        assertEquals(getData(0), result.get(0));
+
+    }
+
+    @Test
+    public void findAll_Page(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".+count.+"))
+                .willReturn(okForContentType("text/plain","col_0_0_\n1")));
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".+limit.+"))
+                .willReturn(okForContentType("text/plain",getCsvData())));
+
+
+        var result = dataRepository.findAll(Pageable.ofSize(1)).get().findFirst().get();
+
+        assertEquals(getData(0), result);
 
     }
 
