@@ -60,7 +60,7 @@ public class CrudRepositoryTest {
 
         var result = dataCrud.findAll();
 
-        assertEquals(getData(0), result.get(0));
+        assertEquals(getData(), result.get(0));
 
     }
 
@@ -71,7 +71,7 @@ public class CrudRepositoryTest {
 
         var result = dataCrud.findAll(Sort.by("name"));
 
-        assertEquals(getData(0), result.get(0));
+        assertEquals(getData(), result.get(0));
 
     }
 
@@ -80,7 +80,7 @@ public class CrudRepositoryTest {
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".+count.+"))
-                .willReturn(okForContentType("text/plain","col_0_0_\n1")));
+                .willReturn(okForContentType("text/plain","number\n1")));
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".+limit.+"))
@@ -89,7 +89,7 @@ public class CrudRepositoryTest {
 
         var result = dataCrud.findAll(Pageable.ofSize(1)).get().findFirst().get();
 
-        assertEquals(getData(0), result);
+        assertEquals(getData(), result);
 
     }
 
@@ -100,42 +100,42 @@ public class CrudRepositoryTest {
         stubForOneData(wmRuntimeInfo);
 
         var ids =new ArrayList<Long>();
-        ids.add(0L);
+        ids.add(getData().getId());
 
         var result = dataCrud.findAllById(ids);
 
-        assertEquals(getData(0), result.get(0));
+        assertEquals(getData(), result.get(0));
 
     }
 
     @Test
     public void findById(WireMockRuntimeInfo wmRuntimeInfo){
 
-        stubForOneDataWithZero(wmRuntimeInfo);
+        stubForOneData(wmRuntimeInfo);
 
-        var result = dataCrud.findById(1L);
+        var result = dataCrud.findById(getData().getId());
 
-        assertEquals(getData(1), result.get());
+        assertEquals(getData(), result.get());
 
     }
 
     @Test
     public void save_IfSameObjectAlreadyExist(WireMockRuntimeInfo wmRuntimeInfo){
 
-        stubForOneDataWithZero(wmRuntimeInfo);;
+        stubForOneData(wmRuntimeInfo);;
 
-        var result = dataCrud.save(getData(1));
+        var result = dataCrud.save(getData());
 
-        assertEquals(getData(1), result);
+        assertEquals(getData(), result);
 
     }
 
     @Test
     public void save_IfSameObjectDoNotExist(WireMockRuntimeInfo wmRuntimeInfo){
 
-        stubForOneDataWithZero(wmRuntimeInfo);
+        stubForOneData(wmRuntimeInfo);
 
-        Data changed = getData(1);
+        Data changed = getData();
         changed.setDescription("changed");
         var result = dataCrud.save(changed);
 
@@ -149,7 +149,7 @@ public class CrudRepositoryTest {
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".?select data.+"))
-                .willReturn(okForContentType("text/plain","\"id1_0_\", \"descript2_0_\", \"name3_0_\"")));
+                .willReturn(okForContentType("text/plain","\"id\", \"description\", \"name\"")));
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".?insert.+"))
                 .willReturn(okForContentType("text/plain","key\n2")));
@@ -158,7 +158,7 @@ public class CrudRepositoryTest {
                 .withRequestBody(WireMock.matching(".?select currval.+"))
                 .willReturn(okForContentType("text/plain","key\n 2")));
 
-        Data changed = getData(1);
+        Data changed = getData();
         var result = dataCrud.save(changed);
 
         assertEquals(changed, result);
@@ -190,10 +190,10 @@ public class CrudRepositoryTest {
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".?select.+"))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+                .willReturn(okForContentType("text/plain",getCsvData())));
 
         var entities = new ArrayList<Data>();
-        entities.add(getData(0));
+        entities.add(getData());
 
         dataCrud.deleteAll(entities);
 
@@ -210,7 +210,7 @@ public class CrudRepositoryTest {
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".?select.+"))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+                .willReturn(okForContentType("text/plain",getCsvData())));
 
         var ids =new ArrayList<Long>();
         ids.add(0L);
@@ -231,7 +231,7 @@ public class CrudRepositoryTest {
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".?select.+"))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
+                .willReturn(okForContentType("text/plain",getCsvData())));
 
 
         dataCrud.deleteById(0L);
@@ -242,10 +242,10 @@ public class CrudRepositoryTest {
 
 
 
-    static Data getData(long id){
+    static Data getData(){
 
         Data data = new Data();
-        data.setId(id);
+        data.setId(1L);
         data.setDescription("description");
         data.setName("name");
 
@@ -254,8 +254,8 @@ public class CrudRepositoryTest {
     }
 
     static  String getCsvData(){
-        Data data = getData(0);
-        return "\"id1_0_\", \"descript2_0_\", \"name3_0_\"" +
+        Data data = getData();
+        return "\"id\", \"description\", \"name\"" +
                 "\n " + data.getId() + ", \""
                 + data.getDescription() + "\", \""
                 + data.getName() + "\"";
@@ -269,21 +269,5 @@ public class CrudRepositoryTest {
 
     }
 
-    static  String getCsvDataWithZero(){
-        //for method getById spring generated names with adding '0_' in query
-        Data data = getData(1);
-        return "\"id1_0_\", \"descript2_0_0_\", \"name3_0_0_\"" +
-                "\n " + data.getId() + ", \""
-                + data.getDescription() + "\", \""
-                + data.getName() + "\"";
-
-    }
-
-    static void stubForOneDataWithZero(WireMockRuntimeInfo wmRuntimeInfo){
-
-        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
-
-    }
 
 }
