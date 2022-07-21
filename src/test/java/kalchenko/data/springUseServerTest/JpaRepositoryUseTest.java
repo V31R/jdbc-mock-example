@@ -60,7 +60,7 @@ public class JpaRepositoryUseTest {
 
         var result = dataRepository.findAll();
 
-        assertEquals(getData(0), result.get(0));
+        assertEquals(getData(), result.get(0));
 
     }
 
@@ -71,7 +71,7 @@ public class JpaRepositoryUseTest {
 
         var result = dataRepository.findAll(Sort.by("name"));
 
-        assertEquals(getData(0), result.get(0));
+        assertEquals(getData(), result.get(0));
 
     }
 
@@ -89,7 +89,7 @@ public class JpaRepositoryUseTest {
 
         var result = dataRepository.findAll(Pageable.ofSize(1)).get().findFirst().get();
 
-        assertEquals(getData(0), result);
+        assertEquals(getData(), result);
 
     }
 
@@ -100,42 +100,42 @@ public class JpaRepositoryUseTest {
         stubForOneData(wmRuntimeInfo);
 
         var ids =new ArrayList<Long>();
-        ids.add(0L);
+        ids.add(getData().getId());
 
         var result = dataRepository.findAllById(ids);
 
-        assertEquals(getData(0), result.get(0));
+        assertEquals(getData(), result.get(0));
 
     }
 
     @Test
     public void findById(WireMockRuntimeInfo wmRuntimeInfo){
 
-        stubForOneDataWithZero(wmRuntimeInfo);
+        stubForOneData(wmRuntimeInfo);
 
         var result = dataRepository.findById(1L);
 
-        assertEquals(getData(1), result.get());
+        assertEquals(getData(), result.get());
 
     }
 
     @Test
     public void save_IfSameObjectAlreadyExist(WireMockRuntimeInfo wmRuntimeInfo){
 
-        stubForOneDataWithZero(wmRuntimeInfo);;
+        stubForOneData(wmRuntimeInfo);;
 
-        var result = dataRepository.save(getData(1));
+        var result = dataRepository.save(getData());
 
-        assertEquals(getData(1), result);
+        assertEquals(getData(), result);
 
     }
 
     @Test
     public void save_IfSameObjectDoNotExist(WireMockRuntimeInfo wmRuntimeInfo){
 
-        stubForOneDataWithZero(wmRuntimeInfo);
+        stubForOneData(wmRuntimeInfo);
 
-        Data changed = getData(1);
+        Data changed = getData();
         changed.setDescription("changed");
         var result = dataRepository.save(changed);
 
@@ -143,10 +143,10 @@ public class JpaRepositoryUseTest {
 
     }
 
-    static Data getData(long id){
+    static Data getData(){
 
         Data data = new Data();
-        data.setId(id);
+        data.setId(1L);
         data.setDescription("description");
         data.setName("name");
 
@@ -155,23 +155,14 @@ public class JpaRepositoryUseTest {
     }
 
     static  String getCsvData(){
-        Data data = getData(0);
-        return "\"id1_0_\", \"descript2_0_\", \"name3_0_\"" +
+        Data data = getData();
+        return "\"id\", \"description\", \"name\"" +
                 "\n " + data.getId() + ", \""
                 + data.getDescription() + "\", \""
                 + data.getName() + "\"";
 
     }
 
-    static  String getCsvDataWithZero(){
-        //for method getById spring generated names with adding '0_' in query
-        Data data = getData(1);
-        return "\"id1_0_\", \"descript2_0_0_\", \"name3_0_0_\"" +
-                "\n " + data.getId() + ", \""
-                + data.getDescription() + "\", \""
-                + data.getName() + "\"";
-
-    }
 
     static void stubForOneData(WireMockRuntimeInfo wmRuntimeInfo){
 
@@ -179,13 +170,5 @@ public class JpaRepositoryUseTest {
                 .willReturn(okForContentType("text/plain",getCsvData())));
 
     }
-
-    static void stubForOneDataWithZero(WireMockRuntimeInfo wmRuntimeInfo){
-
-        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
-                .willReturn(okForContentType("text/plain",getCsvDataWithZero())));
-
-    }
-
 
 }

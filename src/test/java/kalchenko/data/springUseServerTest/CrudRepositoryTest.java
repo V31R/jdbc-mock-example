@@ -143,6 +143,28 @@ public class CrudRepositoryTest {
 
     }
 
+
+    @Test
+    public void save_IfSameObjectDoNotExist_(WireMockRuntimeInfo wmRuntimeInfo){
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?select data.+"))
+                .willReturn(okForContentType("text/plain","\"id1_0_\", \"descript2_0_\", \"name3_0_\"")));
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?insert.+"))
+                .willReturn(okForContentType("text/plain","key\n2")));
+
+        wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
+                .withRequestBody(WireMock.matching(".?select currval.+"))
+                .willReturn(okForContentType("text/plain","key\n 2")));
+
+        Data changed = getData(1);
+        var result = dataCrud.save(changed);
+
+        assertEquals(changed, result);
+
+    }
+
     @Test
     public void deleteAll(WireMockRuntimeInfo wmRuntimeInfo){
 
