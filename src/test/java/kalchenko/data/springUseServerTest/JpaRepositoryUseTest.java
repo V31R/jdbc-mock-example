@@ -122,7 +122,7 @@ public class JpaRepositoryUseTest {
     @Test
     public void save_IfSameObjectAlreadyExist(WireMockRuntimeInfo wmRuntimeInfo){
 
-        stubForOneData(wmRuntimeInfo);;
+        stubForOneData(wmRuntimeInfo);
 
         var result = dataRepository.save(getData());
 

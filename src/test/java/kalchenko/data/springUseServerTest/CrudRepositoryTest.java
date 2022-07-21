@@ -156,7 +156,7 @@ public class CrudRepositoryTest {
 
         wmRuntimeInfo.getWireMock().stubFor(post(WireMock.urlEqualTo(url))
                 .withRequestBody(WireMock.matching(".?select currval.+"))
-                .willReturn(okForContentType("text/plain","key\n 2")));
+                .willReturn(okForContentType("text/plain","key, key\n1, 1")));
 
         Data changed = getData();
         var result = dataCrud.save(changed);
