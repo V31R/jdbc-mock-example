@@ -21,14 +21,13 @@ jdbc:wm://localhost:8080/sql-mock
 ```
 Connection connection = DriverManager.getConnection("jdbc:wm://localhost:8080/sql-mock");
 ```
-После чего можно получить экземпляры `Statement`* или `PreparedStatement` для дальнейшей работы.
+После чего можно получить экземпляры `Statement` или `PreparedStatement` для дальнейшей работы.
 К примеру:
 ```
 Connection connection = DriverManager.getConnection("jdbc:wm://localhost:8080/sql-mock");
 Statement statement = connection.createStatement();
 ResultSet resultSet = statement.executeQuery("select * from table");
 ```
-****-У экземпляров класса `Statement` работоспосбен только метод `executeQuery(String sql)`***
 ***
 ## Использование с Spring Boot
 
